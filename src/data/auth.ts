@@ -3,6 +3,10 @@ import { sequelize } from "../db/database";
 
 type user = {
     wallet: string
+    username: string
+    image: string
+    description: string
+    url: string
 }
 
 const DataTypes = SQ.DataTypes;
@@ -31,10 +35,11 @@ export async function findByWallet(wallet: string) {
 }
 
 export async function findById(id: any) {
-    return User.findByPk(id);
+    //@ts-ignore
+    return User.findByPk(id).then((data) => data.dataValues);
 }
 
 export async function createUser(user: user) {
-    // return User.create(user).then((data) => data.dataValues.id); 
-    return User.create(user).then((data) => 1); 
+    //@ts-ignore 
+    return User.create(user).then((data) => data.dataValues); 
 }

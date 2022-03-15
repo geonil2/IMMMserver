@@ -39,6 +39,13 @@ const validateCredential = [
         .withMessage('wallet is not connect'),
     validator_js_1.validate,
 ];
+const validateSignIn = [
+    ...validateCredential,
+    (0, express_validator_1.body)('id')
+        .trim()
+        .notEmpty()
+        .withMessage('Id is not found'),
+];
 const validateSignup = [
     ...validateCredential,
     (0, express_validator_1.body)('username').notEmpty().withMessage('name is missing'),
@@ -48,8 +55,9 @@ const validateSignup = [
         .optional({ nullable: true, checkFalsy: true }),
     validator_js_1.validate,
 ];
-// router.post('/signup', validateSignup, authController.signup);
-router.post('/login', validateCredential, authController.login);
+router.post('/signup', validateCredential, authController.signUp);
+router.post('/login', validateSignIn, authController.signIn);
+// router.get('/:wallet,' authController.me);
 // router.get('/', (req, res, next) => {
 //     res.status(200).json({ message : 'test!!!!' });
 // });

@@ -42,14 +42,15 @@ function findByWallet(wallet) {
 exports.findByWallet = findByWallet;
 function findById(id) {
     return __awaiter(this, void 0, void 0, function* () {
-        return exports.User.findByPk(id);
+        //@ts-ignore
+        return exports.User.findByPk(id).then((data) => data.dataValues);
     });
 }
 exports.findById = findById;
 function createUser(user) {
     return __awaiter(this, void 0, void 0, function* () {
-        // return User.create(user).then((data) => data.dataValues.id); 
-        return exports.User.create(user).then((data) => 1);
+        //@ts-ignore 
+        return exports.User.create(user).then((data) => data.dataValues);
     });
 }
 exports.createUser = createUser;

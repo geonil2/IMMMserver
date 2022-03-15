@@ -35,48 +35,60 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.signup = exports.login = void 0;
+exports.signIn = exports.signUp = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
 require("express-async-errors");
 const userRepository = __importStar(require("../data/auth"));
 const config_1 = require("../config");
-function login(req, res) {
+function signUp(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const { wallet } = req.body;
-        const user = yield userRepository.findByWallet(wallet);
-        console.log(user, 'user');
-        if (!user) {
-            yield signup(req, res);
-            return;
-            // isValidPassword = await bcrypt.compare(wallet, newUser);
+        const found = yield userRepository.findByWallet(wallet);
+        if (found) {
+            return res.status(409).json({ message: `${wallet} already exists` });
         }
-        // isValidPassword = await bcrypt.compare(wallet, user.wallet);
-        const isValidPassword = true;
+        const hashed = yield bcrypt_1.default.hash(wallet, config_1.config.bcrypt.saltRounds);
+        const user = yield userRepository.createUser({
+            wallet: hashed,
+            username: wallet,
+            image: 'https://picsum.photos/seed/picsum/200/300',
+            description: '',
+            url: ''
+        });
+        const token = createJwtToken(user.id);
+        res.status(201).json({ token: token, user: user });
+    });
+}
+exports.signUp = signUp;
+function signIn(req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const { wallet, id } = req.body;
+        const user = yield userRepository.findById(id);
+        if (!user) {
+            return res.status(401).json({ message: 'Invalid user' });
+        }
+        const isValidPassword = yield bcrypt_1.default.compare(wallet, user.wallet);
         if (!isValidPassword) {
             return res.status(401).json({ message: 'Invalid user' });
         }
-        const token = createJwtToken(1);
-        res.status(200).json({ token, wallet });
-    });
-}
-exports.login = login;
-function signup(req, res) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const { wallet } = req.body;
-        // const found = await userRepository.findByWallet(wallet);
-        // if (found) {
-        //     return res.status(409).json({ message: `${wallet} already exists` });
-        // }
-        const hashed = yield bcrypt_1.default.hash(wallet, config_1.config.bcrypt.saltRounds);
-        const userId = yield userRepository.createUser({
-            wallet
+        const token = createJwtToken(user.id);
+        res.status(200).json({
+            token: token,
+            user: user
         });
-        const token = createJwtToken(userId);
-        res.status(201).json({ token, wallet });
     });
 }
-exports.signup = signup;
+exports.signIn = signIn;
+// export async function me(req: Request, res: Response) {
+//     const { wallet } = req.body;
+//     const user = await userRepository.findByWallet(wallet);
+//     if (!user) {
+//         return res.status(404).json({ message: 'User not found' });
+//     }
+//     //@ts-ignore
+//     res.status(200).json(user.dataValues);
+// }
 function createJwtToken(id) {
     return jsonwebtoken_1.default.sign({ id }, config_1.config.jwt.secretKey, { expiresIn: config_1.config.jwt.expiresInSec });
 }
