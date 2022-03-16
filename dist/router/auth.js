@@ -31,6 +31,7 @@ require("express-async-errors");
 const express_validator_1 = require("express-validator");
 const validator_js_1 = require("../middleware/validator.js");
 const authController = __importStar(require("../controller/auth.js"));
+const auth_js_1 = require("../middleware/auth.js");
 const router = express_1.default.Router();
 const validateCredential = [
     (0, express_validator_1.body)('wallet')
@@ -44,12 +45,13 @@ const validateSignIn = [
     (0, express_validator_1.body)('id')
         .trim()
         .notEmpty()
-        .withMessage('Id is not found'),
+        .withMessage('id is not found'),
+    validator_js_1.validate,
 ];
-const validateSignup = [
-    ...validateCredential,
-    (0, express_validator_1.body)('username').notEmpty().withMessage('name is missing'),
-    (0, express_validator_1.body)('url')
+const validateUpdate = [
+    ...validateSignIn,
+    (0, express_validator_1.body)('username').trim().notEmpty().withMessage('name is missing'),
+    (0, express_validator_1.body)(['url', 'image'])
         .isURL()
         .withMessage('invalid URL')
         .optional({ nullable: true, checkFalsy: true }),
@@ -57,9 +59,6 @@ const validateSignup = [
 ];
 router.post('/signup', validateCredential, authController.signUp);
 router.post('/login', validateSignIn, authController.signIn);
-// router.get('/:wallet,' authController.me);
-// router.get('/', (req, res, next) => {
-//     res.status(200).json({ message : 'test!!!!' });
-// });
+router.put('/update', auth_js_1.isAuth, validateUpdate, authController.update);
 exports.default = router;
 //# sourceMappingURL=auth.js.map

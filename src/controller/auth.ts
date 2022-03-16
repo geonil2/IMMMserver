@@ -13,25 +13,33 @@ export async function signUp(req: Request, res: Response) {
     }
     const hashed = await bcrypt.hash(wallet, config.bcrypt.saltRounds);
     const user = await userRepository.createUser({ 
-        wallet : hashed, 
-        username : wallet,
+        wallet,
+        password : hashed,
+        username : '',
         image : 'https://picsum.photos/seed/picsum/200/300',
         description : '',
         url : ''
     });
 
     const token = createJwtToken(user.id);
-    res.status(201).json({ token : token, user : user });
+    res.status(201).json({ 
+        token : token, 
+        id : user.id,
+        wallet : user.wallet,
+        username : user.username,
+        description : user.description,
+        image : user.image,
+        url : user.url
+    });
 }
 
 export async function signIn(req: Request, res: Response) {
     const { wallet, id } = req.body;
     const user = await userRepository.findById(id);
-
     if (!user) {
         return res.status(401).json({ message : 'Invalid user' });
     }
-    const isValidPassword = await bcrypt.compare(wallet, user.wallet);
+    const isValidPassword = await bcrypt.compare(wallet, user.password);
 
     if (!isValidPassword) {
         return res.status(401).json({ message : 'Invalid user' });
@@ -40,7 +48,39 @@ export async function signIn(req: Request, res: Response) {
     const token = createJwtToken(user.id);
     res.status(200).json({ 
         token : token, 
-        user : user
+        id : user.id,
+        wallet : user.wallet,
+        username : user.username,
+        description : user.description,
+        image : user.image,
+        url : user.url
+    });
+}
+
+export async function update(req: Request, res: Response) {
+    const { id, wallet, username, description, image, url } = req.body;
+    const user = await userRepository.findById(id);
+    if (!user) {
+        return res.status(401).json({ message : 'Invalid user' });
+    }
+    const isValidPassword = await bcrypt.compare(wallet, user.password);
+    if (!isValidPassword) {
+        return res.status(401).json({ message : 'Invalid user' });
+    }
+    const updated = await userRepository.update(id, username, description, image, url);
+    res.status(200).json({
+        //@ts-ignore 
+        id : updated.id,
+        //@ts-ignore 
+        wallet : updated.wallet,
+        //@ts-ignore 
+        username : updated.username,
+        //@ts-ignore 
+        description : updated.description,
+        //@ts-ignore 
+        image : updated.image,
+        //@ts-ignore 
+        url : updated.url
     });
 }
 

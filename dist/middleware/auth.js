@@ -42,15 +42,16 @@ const config_js_1 = require("../config.js");
 const AUTH_ERROR = { message: 'Authorization Error' };
 const isAuth = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const authHeader = req.get('Authorization');
-    if (!(authHeader && authHeader.startsWith('Bearer'))) {
+    if (!(authHeader && authHeader.startsWith('Bearer '))) {
         return res.status(401).json(AUTH_ERROR);
     }
+    console.log(authHeader, 'authHeader');
     const token = authHeader.split(' ')[1];
     jsonwebtoken_1.default.verify(token, config_js_1.config.jwt.secretKey, (error, decoded) => __awaiter(void 0, void 0, void 0, function* () {
         if (error) {
             return res.status(401).json(AUTH_ERROR);
         }
-        const user = yield userRepository.findById(decoded.id);
+        const user = yield userRepository.findById(decoded === null || decoded === void 0 ? void 0 : decoded.id);
         if (!user) {
             return res.status(401).json(AUTH_ERROR);
         }

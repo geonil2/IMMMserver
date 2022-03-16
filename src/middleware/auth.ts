@@ -7,10 +7,10 @@ const AUTH_ERROR = { message : 'Authorization Error' };
 
 export const isAuth = async (req: Request, res: Response, next: NextFunction) => {
     const authHeader = req.get('Authorization');
-    if (!(authHeader && authHeader.startsWith('Bearer'))) {
+    if (!(authHeader && authHeader.startsWith('Bearer '))) {
         return res.status(401).json(AUTH_ERROR);
     }
-
+    console.log(authHeader, 'authHeader')
     const token = authHeader.split(' ' )[1];
 
     jwt.verify(
@@ -20,7 +20,7 @@ export const isAuth = async (req: Request, res: Response, next: NextFunction) =>
             if (error) {
                 return res.status(401).json(AUTH_ERROR);
             }
-            const user = await userRepository.findById(decoded.id);
+            const user = await userRepository.findById(decoded?.id);
             if (!user) {
                 return res.status(401).json(AUTH_ERROR);
             }

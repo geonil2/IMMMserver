@@ -35,7 +35,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.signIn = exports.signUp = void 0;
+exports.update = exports.signIn = exports.signUp = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
 require("express-async-errors");
@@ -50,14 +50,23 @@ function signUp(req, res) {
         }
         const hashed = yield bcrypt_1.default.hash(wallet, config_1.config.bcrypt.saltRounds);
         const user = yield userRepository.createUser({
-            wallet: hashed,
-            username: wallet,
+            wallet,
+            password: hashed,
+            username: '',
             image: 'https://picsum.photos/seed/picsum/200/300',
             description: '',
             url: ''
         });
         const token = createJwtToken(user.id);
-        res.status(201).json({ token: token, user: user });
+        res.status(201).json({
+            token: token,
+            id: user.id,
+            wallet: user.wallet,
+            username: user.username,
+            description: user.description,
+            image: user.image,
+            url: user.url
+        });
     });
 }
 exports.signUp = signUp;
@@ -68,18 +77,52 @@ function signIn(req, res) {
         if (!user) {
             return res.status(401).json({ message: 'Invalid user' });
         }
-        const isValidPassword = yield bcrypt_1.default.compare(wallet, user.wallet);
+        const isValidPassword = yield bcrypt_1.default.compare(wallet, user.password);
         if (!isValidPassword) {
             return res.status(401).json({ message: 'Invalid user' });
         }
         const token = createJwtToken(user.id);
         res.status(200).json({
             token: token,
-            user: user
+            id: user.id,
+            wallet: user.wallet,
+            username: user.username,
+            description: user.description,
+            image: user.image,
+            url: user.url
         });
     });
 }
 exports.signIn = signIn;
+function update(req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const { id, wallet, username, description, image, url } = req.body;
+        const user = yield userRepository.findById(id);
+        if (!user) {
+            return res.status(401).json({ message: 'Invalid user' });
+        }
+        const isValidPassword = yield bcrypt_1.default.compare(wallet, user.password);
+        if (!isValidPassword) {
+            return res.status(401).json({ message: 'Invalid user' });
+        }
+        const updated = yield userRepository.update(id, username, description, image, url);
+        res.status(200).json({
+            //@ts-ignore 
+            id: updated.id,
+            //@ts-ignore 
+            wallet: updated.wallet,
+            //@ts-ignore 
+            username: updated.username,
+            //@ts-ignore 
+            description: updated.description,
+            //@ts-ignore 
+            image: updated.image,
+            //@ts-ignore 
+            url: updated.url
+        });
+    });
+}
+exports.update = update;
 // export async function me(req: Request, res: Response) {
 //     const { wallet } = req.body;
 //     const user = await userRepository.findByWallet(wallet);

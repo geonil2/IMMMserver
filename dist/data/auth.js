@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createUser = exports.findById = exports.findByWallet = exports.User = void 0;
+exports.update = exports.createUser = exports.findById = exports.findByWallet = exports.User = void 0;
 const sequelize_1 = __importDefault(require("sequelize"));
 const database_1 = require("../db/database");
 const DataTypes = sequelize_1.default.DataTypes;
@@ -23,6 +23,10 @@ exports.User = database_1.sequelize.define('user', {
         allowNull: false,
         primaryKey: true,
     },
+    password: {
+        type: DataTypes.TEXT,
+        allowNull: false,
+    },
     wallet: {
         type: DataTypes.STRING(128),
         allowNull: false,
@@ -30,8 +34,8 @@ exports.User = database_1.sequelize.define('user', {
     username: {
         type: DataTypes.STRING(45),
     },
-    image: DataTypes.TEXT,
     description: DataTypes.TEXT,
+    image: DataTypes.TEXT,
     url: DataTypes.TEXT,
 }, { timestamps: false });
 function findByWallet(wallet) {
@@ -42,8 +46,8 @@ function findByWallet(wallet) {
 exports.findByWallet = findByWallet;
 function findById(id) {
     return __awaiter(this, void 0, void 0, function* () {
-        //@ts-ignore
-        return exports.User.findByPk(id).then((data) => data.dataValues);
+        //@ts-ignore 
+        return exports.User.findByPk(id).then((data) => data === null || data === void 0 ? void 0 : data.dataValues);
     });
 }
 exports.findById = findById;
@@ -54,4 +58,21 @@ function createUser(user) {
     });
 }
 exports.createUser = createUser;
+function update(id, username, description, image, url) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return exports.User.findByPk(id).then((data) => {
+            //@ts-ignore 
+            data.username = username,
+                //@ts-ignore 
+                data.description = description,
+                //@ts-ignore 
+                data.image = image,
+                //@ts-ignore 
+                data.url = url;
+            //@ts-ignore 
+            return data.save();
+        });
+    });
+}
+exports.update = update;
 //# sourceMappingURL=auth.js.map
