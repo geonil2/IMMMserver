@@ -10,6 +10,7 @@ const helmet_1 = __importDefault(require("helmet"));
 require("express-async-errors");
 const config_1 = require("./config");
 const auth_1 = __importDefault(require("./router/auth"));
+const nft_1 = __importDefault(require("./router/nft"));
 const database_js_1 = require("./db/database.js");
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
@@ -17,6 +18,8 @@ app.use((0, helmet_1.default)());
 app.use((0, cors_1.default)());
 app.use((0, morgan_1.default)('tiny'));
 app.use('/', auth_1.default);
+app.use('/', nft_1.default);
+// app.use('/', chatRouter);
 app.use((req, res, next) => {
     res.sendStatus(404);
 });

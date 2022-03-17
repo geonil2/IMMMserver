@@ -84,16 +84,6 @@ export async function update(req: Request, res: Response) {
     });
 }
 
-// export async function me(req: Request, res: Response) {
-//     const { wallet } = req.body;
-//     const user = await userRepository.findByWallet(wallet);
-//     if (!user) {
-//         return res.status(404).json({ message: 'User not found' });
-//     }
-//     //@ts-ignore
-//     res.status(200).json(user.dataValues);
-// }
-
 function createJwtToken(id: number) {
     return jwt.sign({ id }, config.jwt.secretKey, { expiresIn : config.jwt.expiresInSec});
 }

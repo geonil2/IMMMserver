@@ -123,15 +123,6 @@ function update(req, res) {
     });
 }
 exports.update = update;
-// export async function me(req: Request, res: Response) {
-//     const { wallet } = req.body;
-//     const user = await userRepository.findByWallet(wallet);
-//     if (!user) {
-//         return res.status(404).json({ message: 'User not found' });
-//     }
-//     //@ts-ignore
-//     res.status(200).json(user.dataValues);
-// }
 function createJwtToken(id) {
     return jsonwebtoken_1.default.sign({ id }, config_1.config.jwt.secretKey, { expiresIn: config_1.config.jwt.expiresInSec });
 }

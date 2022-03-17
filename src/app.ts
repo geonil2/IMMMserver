@@ -5,6 +5,8 @@ import helmet from 'helmet';
 import 'express-async-errors';
 import { config } from "./config";
 import authRouter from './router/auth';
+import nftRouter from './router/nft';
+// import chatRouter from './router/chat';
 import { initSocket } from './connection/socket.js';
 import { sequelize } from "./db/database.js";
 
@@ -16,6 +18,8 @@ app.use(cors());
 app.use(morgan('tiny'));
 
 app.use('/', authRouter);
+app.use('/', nftRouter);
+// app.use('/', chatRouter);
 
 app.use((req: Request, res: Response, next: NextFunction) => {
     res.sendStatus(404);
