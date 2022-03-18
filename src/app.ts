@@ -17,7 +17,7 @@ app.use(helmet());
 app.use(cors());
 app.use(morgan('tiny'));
 
-app.use('/', authRouter);
+app.use('/auth', authRouter);
 app.use('/', nftRouter);
 // app.use('/', chatRouter);
 

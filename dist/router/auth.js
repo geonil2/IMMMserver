@@ -58,7 +58,7 @@ const validateUpdate = [
     validator_js_1.validate,
 ];
 router.post('/signup', validateCredential, authController.signUp);
-router.post('/login', validateSignIn, authController.signIn);
+router.post('/signin', validateSignIn, authController.signIn);
 router.put('/update', auth_js_1.isAuth, validateUpdate, authController.update);
 exports.default = router;
 //# sourceMappingURL=auth.js.map

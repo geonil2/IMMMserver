@@ -35,7 +35,7 @@ const validateUpdate = [
 ];
 
 router.post('/signup', validateCredential, authController.signUp);
-router.post('/login', validateSignIn, authController.signIn);
+router.post('/signin', validateSignIn, authController.signIn);
 router.put('/update', isAuth, validateUpdate, authController.update);
 
 export default router;
