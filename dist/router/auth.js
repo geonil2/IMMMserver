@@ -42,14 +42,14 @@ const validateCredential = [
 ];
 const validateSignIn = [
     ...validateCredential,
-    (0, express_validator_1.body)('id')
+    (0, express_validator_1.body)('password')
         .trim()
         .notEmpty()
-        .withMessage('id is not found'),
+        .withMessage('failed auth check'),
     validator_js_1.validate,
 ];
 const validateUpdate = [
-    ...validateSignIn,
+    ...validateCredential,
     (0, express_validator_1.body)('username').trim().notEmpty().withMessage('name is missing'),
     (0, express_validator_1.body)(['url', 'image'])
         .isURL()
@@ -57,7 +57,7 @@ const validateUpdate = [
         .optional({ nullable: true, checkFalsy: true }),
     validator_js_1.validate,
 ];
-router.post('/signup', validateCredential, authController.signUp);
+router.post('/signup', validateSignIn, authController.signUp);
 router.post('/signin', validateSignIn, authController.signIn);
 router.put('/update', auth_js_1.isAuth, validateUpdate, authController.update);
 exports.default = router;

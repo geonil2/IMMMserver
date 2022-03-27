@@ -40,6 +40,7 @@ exports.User = database_1.sequelize.define('user', {
 }, { timestamps: false });
 function findByWallet(wallet) {
     return __awaiter(this, void 0, void 0, function* () {
+        //@ts-ignore
         return exports.User.findOne({ where: { wallet } });
     });
 }
@@ -58,9 +59,9 @@ function createUser(user) {
     });
 }
 exports.createUser = createUser;
-function update(id, username, description, image, url) {
+function update(wallet, username, description, image, url) {
     return __awaiter(this, void 0, void 0, function* () {
-        return exports.User.findByPk(id).then((data) => {
+        return findByWallet(wallet).then((data) => {
             //@ts-ignore 
             data.username = username,
                 //@ts-ignore 

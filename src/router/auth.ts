@@ -17,15 +17,15 @@ const validateCredential = [
 
 const validateSignIn = [
     ...validateCredential,
-    body('id')
+    body('password')
         .trim()
         .notEmpty()
-        .withMessage('id is not found'),
+        .withMessage('failed auth check'),
     validate,
 ];
 
 const validateUpdate = [
-    ...validateSignIn,
+    ...validateCredential,
     body('username').trim().notEmpty().withMessage('name is missing'),
     body(['url', 'image'])
         .isURL()
@@ -34,7 +34,7 @@ const validateUpdate = [
     validate,
 ];
 
-router.post('/signup', validateCredential, authController.signUp);
+router.post('/signup', validateSignIn, authController.signUp);
 router.post('/signin', validateSignIn, authController.signIn);
 router.put('/update', isAuth, validateUpdate, authController.update);
 

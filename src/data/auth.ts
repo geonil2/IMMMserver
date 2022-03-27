@@ -36,7 +36,8 @@ export const User = sequelize.define('user', {
 }, { timestamps: false });
 
 export async function findByWallet(wallet: string) {
-    return User.findOne({where: { wallet }})
+    //@ts-ignore
+    return User.findOne({where: { wallet }});
 }
 
 export async function findById(id: any) {
@@ -50,13 +51,13 @@ export async function createUser(user: user) {
 }
 
 export async function update (
-    id: number,
+    wallet: string,
     username: string, 
     description: string, 
     image: string, 
     url: string
 ) {
-    return User.findByPk(id).then((data) => {
+    return findByWallet(wallet).then((data) => {
         //@ts-ignore 
         data.username = username,
         //@ts-ignore 
